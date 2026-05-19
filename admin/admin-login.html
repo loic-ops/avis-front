@@ -118,7 +118,7 @@
   </div>
 
   <script>
-    const API_BASE = 'https://avis-api-production.up.railway.app/';
+    const API_BASE = 'https://avis-api-production.up.railway.app';
     const digits = document.querySelectorAll('.code-digit');
     const errorMsg = document.getElementById('errorMsg');
     const loginBtn = document.getElementById('loginBtn');
@@ -148,7 +148,7 @@
 
     const API  = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
       ? 'http://127.0.0.1:8000'
-      : 'https://avis-api-production.up.railway.app/'; // Remplacez par l’URL de production de votre API
+      : 'https://avis-api-production.up.railway.app'; // Remplacez par l’URL de production de votre API
 
 
     async function authenticateAdmin() {
