@@ -118,7 +118,7 @@
   </div>
 
   <script>
-    const API_BASE = 'http://127.0.0.1:8000';
+    const API_BASE = 'https://avis-api-production.up.railway.app/';
     const digits = document.querySelectorAll('.code-digit');
     const errorMsg = document.getElementById('errorMsg');
     const loginBtn = document.getElementById('loginBtn');
@@ -146,9 +146,10 @@
       });
     });
 
-    const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    const API  = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
       ? 'http://127.0.0.1:8000'
-      : 'https://VOTRE_API_PUBLIQUE.exemple.com'; // Remplacez par l’URL de production de votre API
+      : 'https://avis-api-production.up.railway.app/'; // Remplacez par l’URL de production de votre API
+
 
     async function authenticateAdmin() {
       const code = Array.from(digits).map(d => d.value).join('');
@@ -163,7 +164,7 @@
       loginBtn.textContent = 'Vérification…';
 
       try {
-        const res = await fetch(`${API_BASE}/api/admin/verify`, {
+        const res = await fetch(`${API }/api/admin/verify`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ code })
