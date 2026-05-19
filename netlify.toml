@@ -1,0 +1,6 @@
+[build]
+publish = "public"
+
+# Si vous souhaitez tester localement avec Netlify CLI et votre backend Docker,
+# lancez netlify dev depuis la racine du projet.
+# En production, remplacez l'URL de l'API ci-dessus par l'adresse publique de votre backend.

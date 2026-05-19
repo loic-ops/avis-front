@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestion des avis | ottica-insight</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f0;
+      --surface: #ffffff;
+      --surface2: #f0efe9;
+      --border: #e2e0d8;
+      --text: #1a1917;
+      --text-muted: #7a7870;
+      --accent: #2d6a4f;
+      --accent-light: #e8f4ee;
+      --accent2: #e76f51;
+      --accent2-light: #fdf0ec;
+      --warn: #f4a261;
+      --warn-light: #fef5ec;
+      --star: #f4a261;
+      --radius: 14px;
+      --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.06);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .layout { display: flex; min-height: 100vh; }
+
+    /* ─── SIDEBAR ─────────────────────────────────────── */
+    .sidebar {
+      width: 240px;
+      background: var(--text);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .sidebar-brand {
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon {
+      width: 34px; height: 34px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .logo-text { font-family: 'DM Serif Display', serif; font-size: 18px; line-height: 1; }
+    .logo-sub { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 1px; }
+
+    .sidebar-nav {
+      padding: 16px 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .nav-label {
+      font-size: 10px; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; color: rgba(255,255,255,.3);
+      padding: 12px 12px 6px;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 8px;
+      font-size: 14px; font-weight: 500;
+      color: rgba(255,255,255,.6); text-decoration: none;
+      transition: all .15s; cursor: pointer;
+    }
+
+    .nav-item:hover { background: rgba(255,255,255,.07); color: #fff; }
+    .nav-item.active { background: var(--accent); color: #fff; }
+    .nav-item .icon { width: 18px; text-align: center; font-size: 15px; }
+
+    .nav-badge {
+      margin-left: auto; background: var(--accent2);
+      color: #fff; font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 20px;
+    }
+
+    .sidebar-footer {
+      padding: 16px 12px;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+
+    .user-chip {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 8px;
+      background: rgba(255,255,255,.05);
+    }
+
+    .user-avatar {
+      width: 32px; height: 32px; background: var(--accent);
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 13px; font-weight: 700;
+    }
+
+    .user-name { font-size: 13px; font-weight: 500; }
+    .user-role { font-size: 11px; color: rgba(255,255,255,.4); }
+
+    /* ─── MAIN ─────────────────────────────────────────── */
+    .main { flex: 1; overflow: hidden; }
+
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 32px; background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 10;
+    }
+
+    .topbar-title h1 { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; }
+    .topbar-title p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+    .topbar-actions { display: flex; align-items: center; gap: 12px; }
+
+    .btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 8px;
+      font-size: 13px; font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer; border: none; transition: all .15s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #235c42; }
+    .btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: var(--border); }
+    .btn-danger { background: var(--accent2-light); color: var(--accent2); border: 1px solid #f5c5b8; }
+    .btn-danger:hover { background: var(--accent2); color: #fff; }
+    .btn-sm { padding: 5px 12px; font-size: 12px; border-radius: 6px; }
+
+    /* ─── CONTENT ─────────────────────────────────────── */
+    .content { padding: 24px 32px; }
+
+    /* ─── FILTERS BAR ─────────────────────────────────── */
+    .filters-bar {
+      display: flex; align-items: center;
+      gap: 0; margin-bottom: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .filter-group {
+      display: flex; align-items: center;
+      gap: 8px; flex-wrap: wrap;
+    }
+
+    .filter-label { font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+
+    .filter-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: 20px; border: 1.5px solid var(--border);
+      font-size: 12px; font-weight: 500; font-family: 'DM Sans', sans-serif;
+      background: var(--surface); cursor: pointer; color: var(--text);
+      transition: all .15s;
+    }
+
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .filter-btn.active {
+      background: var(--accent); color: #fff;
+      border-color: var(--accent);
+    }
+
+    .filter-btn.active.orange { background: var(--warn); border-color: var(--warn); }
+    .filter-btn.active.red { background: var(--accent2); border-color: var(--accent2); }
+    .filter-btn.active.blue { background: #5b8dee; border-color: #5b8dee; }
+
+    .filter-sep {
+      width: 1px; height: 24px; background: var(--border); margin: 0 4px; flex-shrink: 0;
+    }
+
+    .search-input-wrap {
+      position: relative; margin-left: auto;
+    }
+
+    .search-input {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 7px 12px 7px 34px;
+      font-size: 13px; font-family: 'DM Sans', sans-serif;
+      color: var(--text); outline: none; width: 220px;
+      transition: border-color .15s;
+    }
+
+    .search-input:focus { border-color: var(--accent); }
+
+    .search-icon {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      font-size: 14px; color: var(--text-muted);
+    }
+
+    /* ─── TABS ────────────────────────────────────────── */
+    .tabs {
+      display: flex; gap: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: var(--radius) var(--radius) 0 0;
+      overflow: hidden;
+    }
+
+    .tab-btn {
+      flex: 1; padding: 12px 16px;
+      font-size: 13px; font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      border: none; background: transparent; cursor: pointer;
+      color: var(--text-muted); border-bottom: 2px solid transparent;
+      transition: all .15s; display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+
+    .tab-btn:hover { color: var(--text); background: var(--surface2); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--surface); }
+
+    .tab-count {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--surface2); color: var(--text-muted);
+      font-size: 10px; font-weight: 700;
+      width: 20px; height: 20px; border-radius: 50%;
+    }
+
+    .tab-btn.active .tab-count { background: var(--accent-light); color: var(--accent); }
+
+    /* ─── TABLE ────────────────────────────────────────── */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    thead th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    thead th.sortable { cursor: pointer; user-select: none; }
+    thead th.sortable:hover { color: var(--text); }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .12s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surface2); }
+    tbody tr.selected { background: #f0f7f4; }
+
+    tbody td {
+      padding: 14px 16px;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    /* ─── STATUS BADGE ─────────────────────────────────── */
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+    }
+
+    .status-badge.nouveau { background: #eff3fd; color: #5b8dee; }
+    .status-badge.lu { background: var(--surface2); color: var(--text-muted); }
+    .status-badge.traite { background: var(--accent-light); color: var(--accent); }
+    .status-badge.archive { background: var(--border); color: var(--text-muted); }
+
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .nouveau .status-dot { background: #5b8dee; }
+    .lu .status-dot { background: var(--text-muted); }
+    .traite .status-dot { background: var(--accent); }
+    .archive .status-dot { background: var(--border); }
+
+    /* ─── NOTE ────────────────────────────────────────── */
+    .note-stars { color: var(--star); font-size: 13px; letter-spacing: 1px; }
+    .note-num { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ─── ACTIONS ─────────────────────────────────────── */
+    .actions { display: flex; gap: 6px; align-items: center; }
+
+    .action-btn {
+      width: 30px; height: 30px;
+      border-radius: 7px; border: 1px solid var(--border);
+      background: var(--surface2); cursor: pointer; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .15s; position: relative;
+    }
+
+    .action-btn:hover { background: var(--accent); border-color: var(--accent); }
+
+    /* Tooltip */
+    .action-btn::after {
+      content: attr(title);
+      position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%);
+      background: var(--text); color: #fff;
+      padding: 3px 8px; border-radius: 5px; font-size: 10px; font-weight: 500;
+      white-space: nowrap; opacity: 0; pointer-events: none;
+      transition: opacity .15s; font-family: 'DM Sans', sans-serif;
+    }
+
+    .action-btn:hover::after { opacity: 1; }
+
+    /* ─── TAGS ────────────────────────────────────────── */
+    .tag {
+      display: inline-flex; padding: 2px 8px; border-radius: 20px;
+      font-size: 11px; font-weight: 500;
+      background: var(--surface2); color: var(--text-muted);
+      border: 1px solid var(--border); margin: 1px;
+    }
+
+    .tag.positive { background: var(--accent-light); color: var(--accent); border-color: transparent; }
+    .tag.negative { background: var(--accent2-light); color: var(--accent2); border-color: transparent; }
+
+    /* ─── RECO BADGE ──────────────────────────────────── */
+    .reco {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 500; padding: 2px 8px;
+      border-radius: 20px;
+    }
+    .reco.oui { background: var(--accent-light); color: var(--accent); }
+    .reco.peut-etre { background: var(--warn-light); color: #a06030; }
+    .reco.non { background: var(--accent2-light); color: var(--accent2); }
+
+    /* ─── PAGINATION ──────────────────────────────────── */
+    .pagination {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+
+    .pagination-info { font-size: 13px; color: var(--text-muted); }
+
+    .pagination-btns { display: flex; gap: 4px; }
+
+    .page-btn {
+      width: 32px; height: 32px; border-radius: 7px;
+      border: 1px solid var(--border); background: var(--surface);
+      font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: all .15s; display: flex; align-items: center; justify-content: center;
+    }
+
+    .page-btn:hover { background: var(--surface2); }
+    .page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .page-btn:disabled { opacity: .4; cursor: default; }
+
+    /* ─── DETAIL MODAL ────────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.4);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity .2s;
+    }
+
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 18px;
+      width: 100%; max-width: 560px;
+      box-shadow: 0 24px 64px rgba(0,0,0,.2);
+      transform: translateY(20px) scale(.97);
+      transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+      overflow: hidden;
+    }
+
+    .modal-overlay.open .modal { transform: none; }
+
+    .modal-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+    }
+
+    .modal-head h3 { font-size: 16px; font-weight: 600; }
+
+    .modal-close {
+      width: 32px; height: 32px; border-radius: 50%; border: none;
+      background: var(--surface2); cursor: pointer; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s;
+    }
+
+    .modal-close:hover { background: var(--border); }
+
+    .modal-body { padding: 24px; }
+
+    .modal-section { margin-bottom: 20px; }
+    .modal-section h4 { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+
+    .modal-criteres { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .crit-item {
+      background: var(--surface2); border-radius: 10px; padding: 12px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+
+    .crit-item .crit-name { font-size: 11px; color: var(--text-muted); }
+    .crit-item .crit-stars { font-size: 14px; color: var(--star); }
+
+    .modal-comment {
+      background: var(--surface2); border-radius: 10px; padding: 14px;
+      font-size: 14px; line-height: 1.6; color: var(--text);
+      font-style: italic;
+    }
+
+    .modal-actions {
+      display: flex; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    /* ─── NOTE TEXTAREA ───────────────────────────────── */
+    .note-admin-wrap {
+      margin-top: 8px;
+    }
+
+    .note-admin-wrap textarea {
+      width: 100%; padding: 10px 12px; border-radius: 8px;
+      border: 1.5px solid var(--border); background: var(--surface);
+      font-family: 'DM Sans', sans-serif; font-size: 13px;
+      resize: none; outline: none; transition: border-color .15s;
+      color: var(--text);
+    }
+
+    .note-admin-wrap textarea:focus { border-color: var(--accent); }
+
+    /* ─── EMPTY / LOADING ────────────────────────────── */
+    .empty-state {
+      text-align: center; padding: 60px 24px;
+      color: var(--text-muted);
+    }
+
+    .empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; }
+    .empty-state h3 { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .empty-state p { font-size: 13px; }
+
+    .loading-row td { text-align: center; padding: 40px; color: var(--text-muted); font-size: 13px; }
+
+    /* ─── TOAST ──────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 2000;
+      background: var(--text); color: #fff;
+      padding: 12px 18px; border-radius: 10px;
+      font-size: 13px; font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,0,0,.2);
+      transform: translateY(80px); opacity: 0;
+      transition: all .3s cubic-bezier(.34,1.56,.64,1);
+      max-width: 320px;
+    }
+
+    .toast.show { transform: none; opacity: 1; }
+    .toast.success { background: var(--accent); }
+    .toast.error { background: var(--accent2); }
+
+    /* ─── CHECKBOX ────────────────────────────────────── */
+    .cb { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+
+    .bulk-bar {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 16px; background: var(--accent-light);
+      border-bottom: 1px solid #c8e6d4;
+      font-size: 13px; color: var(--accent);
+    }
+
+    .bulk-bar strong { font-weight: 700; }
+
+    /* ─── RESPONSIVE ─────────────────────────────────── */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .content { padding: 16px; }
+      .topbar { padding: 16px; }
+      .filters-bar { flex-direction: column; align-items: flex-start; }
+      .search-input-wrap { margin-left: 0; width: 100%; }
+      .search-input { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="logo">
+        <div class="logo-icon">👁️</div>
+        <div>
+          <div class="logo-text"> Ottica - Vision </div>
+          <div class="logo-sub">Administration</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Avis Patients</div>
+      <a class="nav-item" href="dashboard.html">
+        <span class="icon">📊</span> Tableau de bord
+      </a>
+      <a class="nav-item active" href="reviews.html">
+        <span class="icon">💬</span> Gestion des avis
+        <span class="nav-badge" id="sidebar-badge">…</span>
+      </a>
+      <div class="nav-label" style="margin-top:12px">Navigation</div>
+      <a class="nav-item" href="index.html">
+        <span class="icon">🏠</span> Site public
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-chip" onclick="showAdminProfile()" style="cursor: pointer; transition: opacity 0.2s;">
+        <div class="user-avatar">R</div>
+        <div>
+          <div class="user-name">Responsable</div>
+          <div class="user-role">Administrateur</div>
+        </div>
+      </div>
+      <button onclick="logout()" style="width: 100%; margin-top: 12px; padding: 8px 12px; border: none; background: rgba(255,255,255,.1); color: #fff; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: background .2s; font-family: 'DM Sans', sans-serif;">🚪 Déconnexion</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-title">
+        <h1>Gestion des avis</h1>
+        <p id="topbar-sub">Chargement…</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="exportCSV()">⬇ Exporter CSV</button>
+        <button class="btn btn-primary" onclick="window.location='dashboard.html'">← Dashboard</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- FILTRES -->
+      <div class="filters-bar">
+        <div class="filter-group">
+          <span class="filter-label">Statut :</span>
+          <button class="filter-btn active" data-filter="statut" data-value="" onclick="setFilter('statut','',this)">
+            Tous <span id="count-all">…</span>
+          </button>
+          <button class="filter-btn active blue" data-filter="statut" data-value="nouveau" onclick="setFilter('statut','nouveau',this)" style="display:none">
+            🔵 Nouveaux <span id="count-nouveau">…</span>
+          </button>
+          <button class="filter-btn" data-filter="statut" data-value="nouveau" onclick="setFilter('statut','nouveau',this)" id="btn-nouveau">
+            🔵 Nouveaux <span id="count-nouveau2">…</span>
+          </button>
+          <button class="filter-btn" data-filter="statut" data-value="lu" onclick="setFilter('statut','lu',this)">
+            ⚫ Lus
+          </button>
+          <button class="filter-btn" data-filter="statut" data-value="traite" onclick="setFilter('statut','traite',this)">
+            ✅ Traités
+          </button>
+          <button class="filter-btn" data-filter="statut" data-value="archive" onclick="setFilter('statut','archive',this)">
+            📁 Archivés
+          </button>
+        </div>
+
+        <div class="filter-sep"></div>
+
+        <div class="filter-group">
+          <span class="filter-label">Note :</span>
+          <button class="filter-btn" data-filter="note" data-value="low" onclick="setFilter('note','low',this)">★ 1-2</button>
+          <button class="filter-btn" data-filter="note" data-value="mid" onclick="setFilter('note','mid',this)">★ 3</button>
+          <button class="filter-btn" data-filter="note" data-value="high" onclick="setFilter('note','high',this)">★ 4-5</button>
+        </div>
+
+        <div class="filter-sep"></div>
+
+        <div class="filter-group">
+          <span class="filter-label">Tri :</span>
+          <button class="filter-btn active" data-filter="order" data-value="desc" onclick="setFilter('order','desc',this)">Récent d'abord</button>
+          <button class="filter-btn" data-filter="order" data-value="asc" onclick="setFilter('order','asc',this)">Ancien d'abord</button>
+          <button class="filter-btn" data-filter="order" data-value="note_asc" onclick="setFilter('order','note_asc',this)">Note ↑</button>
+        </div>
+
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="Rechercher…" id="search-input" oninput="onSearch(this.value)" />
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="tabs">
+        <button class="tab-btn active" onclick="setTab('all',this)">
+          Tous les avis <span class="tab-count" id="tab-count-all">…</span>
+        </button>
+        <button class="tab-btn" onclick="setTab('critique',this)">
+          ⚡ Critiques <span class="tab-count" id="tab-count-crit">…</span>
+        </button>
+        <button class="tab-btn" onclick="setTab('positif',this)">
+          ⭐ Positifs <span class="tab-count" id="tab-count-pos">…</span>
+        </button>
+      </div>
+
+      <!-- BULK BAR (hidden par défaut) -->
+      <div class="bulk-bar" id="bulk-bar" style="display:none">
+        <strong id="bulk-count">0</strong> avis sélectionnés —
+        <button class="btn btn-sm btn-ghost" onclick="bulkMark('traite')">✅ Marquer traités</button>
+        <button class="btn btn-sm btn-ghost" onclick="bulkMark('archive')">📁 Archiver</button>
+        <button class="btn btn-sm btn-danger" onclick="bulkDelete()">🗑 Supprimer</button>
+        <button class="btn btn-sm btn-ghost" onclick="clearSelection()" style="margin-left:auto">Annuler</button>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><input type="checkbox" class="cb" id="select-all" onchange="toggleSelectAll(this)" /></th>
+              <th>Commentaire</th>
+              <th class="sortable" onclick="setFilter('order','note_desc',this)">Note ▾</th>
+              <th>Critères</th>
+              <th>Recommandation</th>
+              <th class="sortable" onclick="setFilter('order','desc',this)">Date ▾</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="avis-tbody">
+            <tr class="loading-row"><td colspan="8">⏳ Chargement des avis…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PAGINATION -->
+      <div class="pagination">
+        <span class="pagination-info" id="page-info">–</span>
+        <div class="pagination-btns" id="page-btns"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ─── DETAIL MODAL ──────────────────────────── -->
+<div class="modal-overlay" id="detail-modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Détail de l'avis</h3>
+      <button class="modal-close" onclick="closeDetailModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-content">
+      <!-- injecté par JS -->
+    </div>
+    <div class="modal-actions" id="modal-actions">
+      <!-- injecté par JS -->
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ─── ADMIN PROFILE MODAL ──────────────────────────── -->
+<div class="modal-overlay" id="admin-profile-modal" onclick="if(event.target.id==='admin-profile-modal')closeAdminProfile()">
+  <div class="modal" style="max-width: 400px;">
+    <div class="modal-head">
+      <h3>Profil Administrateur</h3>
+      <button class="modal-close" onclick="closeAdminProfile()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="text-align: center; padding: 20px 0;">
+        <div style="width: 60px; height: 60px; background: #2d6a4f; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px;">👤</div>
+        <h4 id="admin-profile-name" style="margin-bottom: 4px;">Responsable</h4>
+        <p style="color: #7a7870; font-size: 14px;">Administrateur</p>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary btn-sm" onclick="showChangeCodeModal()">🔐 Changer le code</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeAdminProfile()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── ADMIN CHANGE CODE MODAL ──────────────────────────── -->
+<div class="modal-overlay" id="admin-change-code-modal" onclick="if(event.target.id==='admin-change-code-modal')closeChangeCodeModal()">
+  <div class="modal" style="max-width: 420px;">
+    <div class="modal-head">
+      <h3>Modifier votre code d'accès</h3>
+      <button class="modal-close" onclick="closeChangeCodeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #1a1917;">Ancien code (6 chiffres)</label>
+        <input type="password" id="old-code-input" maxlength="6" inputmode="numeric" placeholder="Entrez votre code actuel" style="width: 100%; padding: 10px; border: 1px solid #e2e0d8; border-radius: 8px; font-size: 16px; letter-spacing: 2px;">
+      </div>
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #1a1917;">Nouveau code (6 chiffres)</label>
+        <input type="password" id="new-code-input" maxlength="6" inputmode="numeric" placeholder="Entrez votre nouveau code" style="width: 100%; padding: 10px; border: 1px solid #e2e0d8; border-radius: 8px; font-size: 16px; letter-spacing: 2px;">
+      </div>
+      <div id="change-code-error" style="color: #d62828; font-size: 14px; margin-bottom: 16px; min-height: 20px;"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary btn-sm" onclick="submitChangeCode()">💾 Enregistrer</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeChangeCodeModal()">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── AUTHENTIFICATION ──────────────────────────────────────
+window.addEventListener('load', () => {
+  const token = localStorage.getItem('adminToken');
+  if (!token) {
+    window.location.href = 'admin-login.html';
+  }
+});
+
+function logout() {
+  if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+    localStorage.removeItem('adminToken');
+    window.location.href = 'admin-login.html';
+  }
+}
+
+const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://127.0.0.1:8000'
+  : 'https://VOTRE_API_PUBLIQUE.exemple.com';
+
+// ─── STATE ─────────────────────────────────────────────
+let state = {
+  avis: [],
+  filtered: [],
+  page: 1,
+  perPage: 15,
+  filters: { statut: '', note: '', order: 'desc' },
+  tab: 'all',
+  search: '',
+  selected: new Set()
+};
+
+// ─── HELPERS ───────────────────────────────────────────
+function stars(n) { return '★'.repeat(Math.round(n)) + '☆'.repeat(5-Math.round(n)); }
+
+function timeAgo(dateStr) {
+  const diff = (Date.now() - new Date(dateStr)) / 1000;
+  if (diff < 60) return 'À l\'instant';
+  if (diff < 3600) return `${Math.floor(diff/60)} min`;
+  if (diff < 86400) return `${Math.floor(diff/3600)} h`;
+  if (diff < 604800) return `${Math.floor(diff/86400)} j`;
+  return new Date(dateStr).toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' });
+}
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast show ${type}`;
+  setTimeout(() => { t.className = 'toast'; }, 3000);
+}
+
+// ─── LOAD ──────────────────────────────────────────────
+async function loadAvis() {
+  try {
+    const res = await fetch(`${API}/api/avis?limit=9999`);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    state.avis = data.avis || data;
+  } catch {
+    console.warn('API non disponible — démo');
+    state.avis = getDemoAvis();
+  }
+  applyFilters();
+}
+
+function getDemoAvis() {
+  const comments = [
+    { note:5, text:'Examen très complet, Dr Amevor prend le temps d\'expliquer chaque étape. Équipement moderne et accueil chaleureux.', tags:['Médecin attentif','Équipement moderne'], reco:'oui', criteres:{accueil:5,examen:5,ecoute:5,explications:4,attente:3} },
+    { note:3, text:'Consultation correcte mais attente de 45 min sans information. Le personnel devrait prévenir les patients du retard.', tags:['Temps d\'attente','Communication'], reco:'peut-etre', criteres:{accueil:3,examen:4,ecoute:3,explications:3,attente:1} },
+    { note:1, text:'Ordonnance illisible, j\'ai dû appeler 3 fois pour avoir des précisions. Suivi post-consultation inexistant.', tags:['Ordonnance','Suivi insuffisant'], reco:'non', criteres:{accueil:2,examen:2,ecoute:1,explications:1,attente:2} },
+    { note:5, text:'Personnel très souriant, cabinet propre. La nouvelle machine pour le fond d\'œil est impressionnante !', tags:['Personnel souriant','Propreté'], reco:'oui', criteres:{accueil:5,examen:5,ecoute:5,explications:5,attente:4} },
+    { note:4, text:'Bon examen, bien expliqué. Un peu d\'attente mais dans les normes.', tags:['Clarté','Ponctualité'], reco:'oui', criteres:{accueil:4,examen:4,ecoute:4,explications:5,attente:3} },
+    { note:2, text:'Pas satisfait du suivi. On ne m\'a jamais rappelé pour les résultats de l\'analyse.', tags:['Suivi insuffisant'], reco:'non', criteres:{accueil:3,examen:3,ecoute:2,explications:2,attente:3} },
+    { note:5, text:'Très bon médecin, attentif et professionnel. Je recommande cette clinique sans hésitation.', tags:['Médecin attentif','Professionnalisme'], reco:'oui', criteres:{accueil:5,examen:5,ecoute:5,explications:5,attente:4} },
+    { note:4, text:'Consultation de qualité, explications claires. Je reviendrai.', tags:['Clarté'], reco:'oui', criteres:{accueil:4,examen:5,ecoute:4,explications:5,attente:3} },
+    { note:3, text:'Examen standard mais le médecin semblait pressé. J\'aurais aimé plus de temps pour poser mes questions.', tags:['Écoute'], reco:'peut-etre', criteres:{accueil:4,examen:3,ecoute:2,explications:3,attente:4} },
+    { note:5, text:'Parfait du début à la fin. Merci pour votre professionnalisme !', tags:['Professionnalisme','Accueil'], reco:'oui', criteres:{accueil:5,examen:5,ecoute:5,explications:5,attente:5} },
+  ];
+  const statuts = ['nouveau','nouveau','lu','traite','lu','archive','nouveau','lu','traite','lu'];
+  return comments.map((c, i) => ({
+    id: i+1,
+    ...c,
+    statut: statuts[i],
+    note_admin: '',
+    created_at: new Date(Date.now() - (i * 86400000 * (0.5 + Math.random()))).toISOString()
+  }));
+}
+
+// ─── FILTERS ───────────────────────────────────────────
+function setFilter(key, val, btn) {
+  // Toggle filter
+  if (state.filters[key] === val && val !== '') {
+    state.filters[key] = '';
+    document.querySelectorAll(`[data-filter="${key}"]`).forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-filter="${key}"][data-value=""]`)?.classList.add('active');
+  } else {
+    state.filters[key] = val;
+    document.querySelectorAll(`[data-filter="${key}"]`).forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+  }
+  state.page = 1;
+  applyFilters();
+}
+
+function setTab(tab, btn) {
+  state.tab = tab;
+  state.page = 1;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  applyFilters();
+}
+
+let searchTimeout;
+function onSearch(val) {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    state.search = val.toLowerCase();
+    state.page = 1;
+    applyFilters();
+  }, 300);
+}
+
+function applyFilters() {
+  let list = [...state.avis];
+
+  // Tab
+  if (state.tab === 'critique') list = list.filter(a => a.note <= 2);
+  if (state.tab === 'positif') list = list.filter(a => a.note >= 4);
+
+  // Statut
+  if (state.filters.statut) list = list.filter(a => a.statut === state.filters.statut);
+
+  // Note
+  if (state.filters.note === 'low') list = list.filter(a => a.note <= 2);
+  if (state.filters.note === 'mid') list = list.filter(a => a.note === 3);
+  if (state.filters.note === 'high') list = list.filter(a => a.note >= 4);
+
+  // Search
+  if (state.search) list = list.filter(a =>
+    (a.commentaire||'').toLowerCase().includes(state.search) ||
+    (a.tags||[]).some(t => t.toLowerCase().includes(state.search))
+  );
+
+  // Sort
+  const ord = state.filters.order;
+  if (ord === 'asc') list.sort((a,b) => new Date(a.created_at)-new Date(b.created_at));
+  else if (ord === 'note_asc') list.sort((a,b) => a.note-b.note);
+  else if (ord === 'note_desc') list.sort((a,b) => b.note-a.note);
+  else list.sort((a,b) => new Date(b.created_at)-new Date(a.created_at));
+
+  state.filtered = list;
+
+  // Update counts
+  const total = state.avis.length;
+  const nouveaux = state.avis.filter(a => a.statut === 'nouveau').length;
+  const critiques = state.avis.filter(a => a.note <= 2).length;
+  const positifs = state.avis.filter(a => a.note >= 4).length;
+
+  document.getElementById('count-all').textContent = total;
+  document.getElementById('count-nouveau2').textContent = nouveaux;
+  document.getElementById('tab-count-all').textContent = list.length;
+  document.getElementById('tab-count-crit').textContent = critiques;
+  document.getElementById('tab-count-pos').textContent = positifs;
+  document.getElementById('sidebar-badge').textContent = nouveaux;
+  document.getElementById('topbar-sub').textContent = `${list.length} avis sur ${total} au total`;
+
+  renderTable();
+}
+
+// ─── TABLE ─────────────────────────────────────────────
+function renderTable() {
+  const tbody = document.getElementById('avis-tbody');
+  const start = (state.page-1) * state.perPage;
+  const end = start + state.perPage;
+  const page = state.filtered.slice(start, end);
+
+  if (page.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8">
+      <div class="empty-state">
+        <div class="empty-icon">💬</div>
+        <h3>Aucun avis trouvé</h3>
+        <p>Essayez de modifier vos filtres ou votre recherche.</p>
+      </div>
+    </td></tr>`;
+    renderPagination();
+    return;
+  }
+
+  tbody.innerHTML = page.map(a => `
+    <tr class="${state.selected.has(a.id) ? 'selected' : ''}" id="row-${a.id}">
+      <td><input type="checkbox" class="cb row-cb" ${state.selected.has(a.id)?'checked':''} onchange="toggleSelect(${a.id},this)" /></td>
+      <td style="max-width:260px">
+        <div style="font-size:13px;line-height:1.4;color:var(--text);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">
+          ${a.commentaire || '<span style="color:var(--text-muted);font-style:italic">Sans commentaire</span>'}
+        </div>
+        <div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:3px;">
+          ${(a.tags||[]).slice(0,2).map(t => `<span class="tag ${a.note>=4?'positive':'negative'}">${t}</span>`).join('')}
+        </div>
+      </td>
+      <td>
+        <div class="note-stars">${stars(a.note)}</div>
+        <div class="note-num">${a.note}/5</div>
+      </td>
+      <td>
+        <div style="font-size:11px;color:var(--text-muted);line-height:1.6">
+          ${a.criteres ? Object.entries({accueil:'Acc.',examen:'Exam.',ecoute:'Écoute',explications:'Expl.',attente:'Att.'}).map(([k,l]) =>
+            `${l}: <strong>${a.criteres[k]||'–'}</strong>`).join(' · ') : '–'}
+        </div>
+      </td>
+      <td>
+        ${a.recommandation ? `<span class="reco ${a.recommandation}">
+          ${a.recommandation==='oui'?'👍 Oui':a.recommandation==='peut-etre'?'🤷 Peut-être':'👎 Non'}
+        </span>` : '–'}
+      </td>
+      <td style="color:var(--text-muted);font-size:12px;white-space:nowrap">
+        ${timeAgo(a.created_at)}<br>
+        <span style="font-size:11px">${new Date(a.created_at).toLocaleDateString('fr-FR')}</span>
+      </td>
+      <td>
+        <span class="status-badge ${a.statut}">
+          <span class="status-dot"></span>
+          ${a.statut==='nouveau'?'Nouveau':a.statut==='lu'?'Lu':a.statut==='traite'?'Traité':'Archivé'}
+        </span>
+      </td>
+      <td>
+        <div class="actions">
+          <button class="action-btn" title="Voir le détail" onclick="openDetail(${a.id})">👁</button>
+          ${a.statut !== 'traite' ? `<button class="action-btn" title="Marquer traité" onclick="markStatus(${a.id},'traite')">✅</button>` : ''}
+          ${a.statut !== 'archive' ? `<button class="action-btn" title="Archiver" onclick="markStatus(${a.id},'archive')">📁</button>` : ''}
+          <button class="action-btn" title="Supprimer" onclick="deleteAvis(${a.id})" style="color:var(--accent2)">🗑</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  renderPagination();
+}
+
+function renderPagination() {
+  const total = state.filtered.length;
+  const pages = Math.ceil(total / state.perPage);
+  const start = (state.page-1)*state.perPage+1;
+  const end = Math.min(state.page*state.perPage, total);
+
+  document.getElementById('page-info').textContent = total === 0 ? '0 résultat' : `${start}–${end} sur ${total}`;
+
+  const btns = document.getElementById('page-btns');
+  btns.innerHTML = '';
+
+  if (pages <= 1) return;
+
+  const addBtn = (label, page, active=false, disabled=false) => {
+    const b = document.createElement('button');
+    b.className = `page-btn${active?' active':''}`;
+    b.textContent = label;
+    b.disabled = disabled;
+    if (!disabled) b.onclick = () => { state.page = page; renderTable(); };
+    btns.appendChild(b);
+  };
+
+  addBtn('←', state.page-1, false, state.page === 1);
+  for (let i = 1; i <= pages; i++) {
+    if (i <= 2 || i >= pages-1 || Math.abs(i-state.page) <= 1) {
+      addBtn(i, i, i === state.page);
+    } else if (Math.abs(i-state.page) === 2) {
+      const sp = document.createElement('button');
+      sp.className = 'page-btn'; sp.textContent = '…'; sp.disabled = true;
+      btns.appendChild(sp);
+    }
+  }
+  addBtn('→', state.page+1, false, state.page === pages);
+}
+
+// ─── SELECTION ─────────────────────────────────────────
+function toggleSelect(id, cb) {
+  if (cb.checked) state.selected.add(id);
+  else state.selected.delete(id);
+  document.getElementById('row-'+id)?.classList.toggle('selected', cb.checked);
+  updateBulkBar();
+}
+
+function toggleSelectAll(cb) {
+  const start = (state.page-1)*state.perPage;
+  const end = start + state.perPage;
+  const page = state.filtered.slice(start, end);
+  page.forEach(a => {
+    if (cb.checked) state.selected.add(a.id);
+    else state.selected.delete(a.id);
+  });
+  document.querySelectorAll('.row-cb').forEach(r => { r.checked = cb.checked; });
+  document.querySelectorAll('tbody tr').forEach(r => { r.classList.toggle('selected', cb.checked); });
+  updateBulkBar();
+}
+
+function updateBulkBar() {
+  const bar = document.getElementById('bulk-bar');
+  const count = state.selected.size;
+  if (count > 0) {
+    bar.style.display = 'flex';
+    document.getElementById('bulk-count').textContent = count;
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
+function clearSelection() {
+  state.selected.clear();
+  document.querySelectorAll('.row-cb').forEach(r => r.checked = false);
+  document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('selected'));
+  document.getElementById('select-all').checked = false;
+  updateBulkBar();
+}
+
+// ─── ACTIONS ───────────────────────────────────────────
+async function markStatus(id, statut) {
+  try {
+    const res = await fetch(`${API}/api/avis/${id}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ statut })
+    });
+    if (!res.ok) throw new Error();
+  } catch {}
+
+  const a = state.avis.find(x => x.id === id);
+  if (a) a.statut = statut;
+  showToast(`Statut mis à jour : ${statut}`, 'success');
+  applyFilters();
+}
+
+async function deleteAvis(id) {
+  if (!confirm('Supprimer définitivement cet avis ?')) return;
+  try {
+    await fetch(`${API}/api/avis/${id}`, { method: 'DELETE' });
+  } catch {}
+  state.avis = state.avis.filter(a => a.id !== id);
+  state.selected.delete(id);
+  showToast('Avis supprimé.', 'error');
+  applyFilters();
+}
+
+async function bulkMark(statut) {
+  const ids = [...state.selected];
+  await Promise.all(ids.map(id => markStatus(id, statut)));
+  clearSelection();
+}
+
+async function bulkDelete() {
+  if (!confirm(`Supprimer ${state.selected.size} avis définitivement ?`)) return;
+  const ids = [...state.selected];
+  await Promise.all(ids.map(id => fetch(`${API}/api/avis/${id}`, { method: 'DELETE' }).catch(()=>{})));
+  state.avis = state.avis.filter(a => !ids.includes(a.id));
+  state.selected.clear();
+  showToast(`${ids.length} avis supprimés.`, 'error');
+  applyFilters();
+}
+
+// ─── DETAIL MODAL ──────────────────────────────────────
+function openDetail(id) {
+  const a = state.avis.find(x => x.id === id);
+  if (!a) return;
+
+  // Marquer comme lu automatiquement si nouveau
+  if (a.statut === 'nouveau') markStatus(id, 'lu');
+
+  const critLabels = { accueil:'Accueil', examen:'Examen', ecoute:'Écoute', explications:'Explications', attente:'Attente' };
+
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-section">
+      <h4>Informations générales</h4>
+      <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:24px;color:var(--star)">${stars(a.note)}</div>
+          <div style="font-size:13px;font-weight:700">${a.note}/5</div>
+        </div>
+        <div style="flex:1;min-width:140px">
+          <div style="margin-bottom:4px">
+            <span class="status-badge ${a.statut}"><span class="status-dot"></span>${a.statut==='nouveau'?'Nouveau':a.statut==='lu'?'Lu':a.statut==='traite'?'Traité':'Archivé'}</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-muted)">
+            ${new Date(a.created_at).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' })}
+          </div>
+          ${a.recommandation ? `<div style="margin-top:6px"><span class="reco ${a.recommandation}">${a.recommandation==='oui'?'👍 Recommande':a.recommandation==='peut-etre'?'🤷 Peut-être':'👎 Ne recommande pas'}</span></div>` : ''}
+        </div>
+      </div>
+    </div>
+
+    ${a.criteres ? `
+    <div class="modal-section">
+      <h4>Évaluation par critère</h4>
+      <div class="modal-criteres">
+        ${Object.entries(critLabels).map(([k,l]) => `
+          <div class="crit-item">
+            <span class="crit-name">${l}</span>
+            <span class="crit-stars">${stars(a.criteres[k]||0)}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>` : ''}
+
+    ${a.tags?.length ? `
+    <div class="modal-section">
+      <h4>Tags</h4>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${a.tags.map(t => `<span class="tag ${a.note>=4?'positive':'negative'}">${t}</span>`).join('')}
+      </div>
+    </div>` : ''}
+
+    ${a.commentaire ? `
+    <div class="modal-section">
+      <h4>Commentaire</h4>
+      <div class="modal-comment">"${a.commentaire}"</div>
+    </div>` : ''}
+
+    <div class="modal-section">
+      <h4>Note interne</h4>
+      <div class="note-admin-wrap">
+        <textarea rows="3" placeholder="Ajouter une note interne (visible uniquement par l'équipe)…" id="modal-note">${a.note_admin||''}</textarea>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('modal-actions').innerHTML = `
+    ${a.statut !== 'traite' ? `<button class="btn btn-primary btn-sm" onclick="markStatus(${id},'traite');closeDetailModal()">✅ Marquer traité</button>` : ''}
+    ${a.statut !== 'archive' ? `<button class="btn btn-ghost btn-sm" onclick="markStatus(${id},'archive');closeDetailModal()">📁 Archiver</button>` : ''}
+    <button class="btn btn-ghost btn-sm" onclick="saveNote(${id})">💾 Sauvegarder note</button>
+    <button class="btn btn-danger btn-sm" onclick="deleteAvis(${id});closeDetailModal()" style="margin-left:auto">🗑 Supprimer</button>
+  `;
+
+  document.getElementById('detail-modal').classList.add('open');
+}
+
+async function saveNote(id) {
+  const note = document.getElementById('modal-note').value;
+  const a = state.avis.find(x => x.id === id);
+  if (a) a.note_admin = note;
+  try {
+    await fetch(`${API}/api/avis/${id}/note`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ note_admin: note })
+    });
+  } catch {}
+  showToast('Note interne sauvegardée.', 'success');
+}
+
+function closeDetailModal() {
+  document.getElementById('detail-modal').classList.remove('open');
+}
+
+function closeModal(e) {
+  if (e.target.id === 'detail-modal') closeDetailModal();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDetailModal();
+});
+
+// ─── EXPORT ────────────────────────────────────────────
+function exportCSV() {
+  const list = state.filtered;
+  const csv = [
+    'ID,Note,Commentaire,Tags,Recommandation,Statut,Date',
+    ...list.map(a => [
+      a.id,
+      a.note,
+      `"${(a.commentaire||'').replace(/"/g,'""')}"`,
+      `"${(a.tags||[]).join(', ')}"`,
+      a.recommandation || '',
+      a.statut,
+      new Date(a.created_at).toLocaleDateString('fr-FR')
+    ].join(','))
+  ].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `avis_${new Date().toISOString().slice(0,10)}.csv`;
+  link.click();
+  showToast(`${list.length} avis exportés.`, 'success');
+}
+
+// ─── INIT ──────────────────────────────────────────────
+loadAvis();
+
+// ─── ADMIN PROFILE ──────────────────────────────────────────
+function showAdminProfile() {
+  fetch(`${API}/api/admin/profile`).then(r => r.json()).then(data => {
+    document.getElementById('admin-profile-name').textContent = data.responsable_name || 'Responsable';
+    document.getElementById('admin-profile-modal').classList.add('open');
+  });
+}
+
+function closeAdminProfile() {
+  document.getElementById('admin-profile-modal').classList.remove('open');
+}
+
+function showChangeCodeModal() {
+  closeAdminProfile();
+  document.getElementById('admin-change-code-modal').classList.add('open');
+  document.getElementById('old-code-input').focus();
+}
+
+function closeChangeCodeModal() {
+  document.getElementById('admin-change-code-modal').classList.remove('open');
+  document.getElementById('old-code-input').value = '';
+  document.getElementById('new-code-input').value = '';
+  document.getElementById('change-code-error').textContent = '';
+}
+
+async function submitChangeCode() {
+  const oldCode = document.getElementById('old-code-input').value;
+  const newCode = document.getElementById('new-code-input').value;
+  const errorEl = document.getElementById('change-code-error');
+
+  if (newCode.length !== 6 || !/^\d+$/.test(newCode)) {
+    errorEl.textContent = 'Le nouveau code doit contenir 6 chiffres';
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/api/admin/change-code`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ old_code: oldCode, new_code: newCode })
+    });
+
+    if (res.ok) {
+      showToast('Code modifié avec succès!', 'success');
+      closeChangeCodeModal();
+    } else {
+      errorEl.textContent = 'Ancien code incorrect';
+    }
+  } catch (err) {
+    errorEl.textContent = 'Erreur: ' + err.message;
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeAdminProfile();
+    closeChangeCodeModal();
+  }
+});
+</script>
+</body>
+</html>
