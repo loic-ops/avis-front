@@ -2,6 +2,21 @@
   publish = "."
 
 [[redirects]]
+  from = "/reviews.html"
+  to = "/admin/reviews.html"
+  status = 200
+
+[[redirects]]
+  from = "/dashboard.html"
+  to = "/admin/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin-login.html"
+  to = "/admin/admin-login.html"
+  status = 200
+
+[[redirects]]
   from = "/admin"
   to = "/admin/admin-login.html"
   status = 200
