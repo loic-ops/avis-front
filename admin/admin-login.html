@@ -3,200 +3,360 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connexion Admin - Ottica Vision</title>
+  <title>Connexion Admin — Ottica Vision</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:       #0F6E56;
+      --green-dark:  #085041;
+      --green-light: #E1F5EE;
+      --radius-sm:   8px;
+      --radius-md:   12px;
+      --radius-lg:   16px;
+      --shadow:      0 2px 8px rgba(0,0,0,.06), 0 0 0 0.5px rgba(0,0,0,.08);
+    }
+
+    html, body { height: 100%; }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #95d6b9 0%, #71cba6 100%);
-      min-height: 100vh;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: #f0f0ef;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      min-height: 100vh;
+      padding: 24px;
     }
-    .login-card {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      padding: 40px;
-      max-width: 380px;
-      width: 100%;
-      text-align: center;
-    }
-    .login-icon {
-      font-size: 48px;
-      margin-bottom: 20px;
-    }
-    .login-card h1 {
-      font-size: 24px;
-      color: #102a43;
-      margin-bottom: 12px;
-    }
-    .login-card p {
-      color: #475569;
-      margin-bottom: 30px;
-      font-size: 14px;
-    }
-    .code-input-group {
+
+    /* Card container */
+    .card {
       display: flex;
-      gap: 8px;
-      justify-content: center;
-      margin-bottom: 24px;
-    }
-    .code-input-group input {
-      width: 50px;
-      height: 50px;
-      border: 2px solid #d9e2ec;
-      border-radius: 8px;
-      font-size: 24px;
-      text-align: center;
-      font-weight: bold;
-      color: #102a43;
-      transition: border-color 0.3s;
-    }
-    .code-input-group input:focus {
-      outline: none;
-      border-color: #2d6a4f;
-      box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
-    }
-    .code-input-group input.error {
-      border-color: #d62828;
-    }
-    .error-message {
-      color: #d62828;
-      font-size: 13px;
-      margin-bottom: 16px;
-      min-height: 20px;
-    }
-    .login-button {
       width: 100%;
-      padding: 12px;
-      background: #2d6a4f;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
+      max-width: 720px;
+      min-height: 480px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      background: #fff;
+    }
+
+    /* ── Left panel ─────────────────────────────── */
+    .left {
+      width: 220px;
+      flex-shrink: 0;
+      background: var(--green);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 36px 28px;
+    }
+
+    .brand-icon {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.13);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-size: 22px;
+      margin-bottom: 18px;
+    }
+
+    .brand-name {
+      font-size: 20px;
       font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.1s;
+      color: #fff;
+      line-height: 1.2;
     }
-    .login-button:hover:not(:disabled) {
-      background: #1b4332;
-      transform: translateY(-2px);
-    }
-    .login-button:disabled {
-      background: #94a3b8;
-      cursor: not-allowed;
-    }
-    .info-text {
+
+    .brand-desc {
       font-size: 12px;
-      color: #94a3b8;
-      margin-top: 16px;
+      color: rgba(255,255,255,.5);
+      line-height: 1.6;
+      margin-top: 6px;
+    }
+
+    .dots {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 28px;
+    }
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.18);
+    }
+    .dot.active { background: rgba(255,255,255,.75); }
+
+    .brand-url {
+      font-size: 11px;
+      color: rgba(255,255,255,.28);
+    }
+
+    /* ── Right panel ─────────────────────────────── */
+    .right {
+      flex: 1;
+      padding: 44px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 10px;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 600;
+      color: #0e1a14;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #667680;
+      margin-bottom: 32px;
+      line-height: 1.55;
+    }
+
+    /* Code inputs */
+    .code-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .code-cell {
+      width: 46px; height: 52px;
+      border-radius: var(--radius-sm);
+      border: 1px solid #dde0df;
+      background: #f7f8f7;
+      font-size: 20px;
+      font-weight: 600;
+      text-align: center;
+      color: #0e1a14;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s, background .15s;
+      caret-color: var(--green);
+    }
+    .code-cell:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(15,110,86,.12);
+      background: #fff;
+    }
+    .code-cell.filled {
+      border-color: var(--green);
+      background: #fff;
+    }
+    .code-cell.err {
+      border-color: #c0392b;
+      box-shadow: 0 0 0 3px rgba(192,57,43,.1);
+    }
+
+    .sep {
+      font-size: 18px;
+      color: #c8ccca;
+      padding: 0 2px;
+      line-height: 1;
+      user-select: none;
+    }
+
+    /* Error */
+    .err-line {
+      font-size: 13px;
+      color: #b81e00;
+      min-height: 18px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Button */
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: var(--green);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .15s, transform .1s;
+      font-family: inherit;
+    }
+    .btn:hover  { background: var(--green-dark); }
+    .btn:active { transform: scale(.99); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* Footer */
+    .foot {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #9aaba4;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .foot a {
+      color: var(--green);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .foot a:hover { text-decoration: underline; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .card { flex-direction: column; max-width: 100%; }
+      .left  { width: 100%; flex-direction: row; align-items: center; padding: 24px 28px; gap: 16px; }
+      .dots, .brand-url { display: none; }
+      .brand-icon { margin-bottom: 0; }
+      .right { padding: 32px 28px; }
     }
   </style>
 </head>
 <body>
-  <div class="login-card">
-    <div class="login-icon">🔐</div>
-    <h1>Accès Administrateur</h1>
-    <p>Entrez votre code d'identification à 6 chiffres</p>
-    
-    <div class="code-input-group" id="codeInputGroup">
-      <input type="text" inputmode="numeric" maxlength="1" class="code-digit" />
-      <input type="text" inputmode="numeric" maxlength="1" class="code-digit" />
-      <input type="text" inputmode="numeric" maxlength="1" class="code-digit" />
-      <input type="text" inputmode="numeric" maxlength="1" class="code-digit" />
-      <input type="text" inputmode="numeric" maxlength="1" class="code-digit" />
-      <input type="text" inputmode="numeric" maxlength="1" class="code-digit" />
+
+<div class="card" role="main">
+
+  <!-- Left branding panel -->
+  <div class="left">
+    <div>
+      <div class="brand-icon" aria-hidden="true">
+        <i class="ti ti-eye"></i>
+      </div>
+      <div class="brand-name">Ottica Vision</div>
+      <div class="brand-desc">Suivi des avis patients — interface d'administration</div>
+      <div class="dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
     </div>
-    
-    <div class="error-message" id="errorMsg"></div>
-    
-    <button class="login-button" id="loginBtn">Connexion</button>
-    <p class="info-text">Code fourni par l'administrateur</p>
+    <div class="brand-url">ottica-vision.com</div>
   </div>
 
-  <script>
-    const API_BASE = 'https://avis-api-production.up.railway.app';
-    const digits = document.querySelectorAll('.code-digit');
-    const errorMsg = document.getElementById('errorMsg');
-    const loginBtn = document.getElementById('loginBtn');
+  <!-- Right form panel -->
+  <div class="right">
+    <div class="eyebrow">Espace sécurisé</div>
+    <h1 class="title">Connexion administrateur</h1>
+    <p class="subtitle">Saisissez le code à 6 chiffres fourni par votre responsable.</p>
 
-    // Gestion de la saisie des chiffres
-    digits.forEach((input, index) => {
-      input.addEventListener('input', (e) => {
-        if (e.target.value && /^\d$/.test(e.target.value)) {
-          if (index < digits.length - 1) {
-            digits[index + 1].focus();
-          }
-          errorMsg.textContent = '';
-          input.classList.remove('error');
-        } else if (e.target.value) {
-          e.target.value = '';
-        }
-      });
+    <div class="code-row" id="codeRow">
+      <input class="code-cell" type="text" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="Chiffre 1" />
+      <input class="code-cell" type="text" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="Chiffre 2" />
+      <input class="code-cell" type="text" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="Chiffre 3" />
+      <span class="sep" aria-hidden="true">·</span>
+      <input class="code-cell" type="text" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="Chiffre 4" />
+      <input class="code-cell" type="text" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="Chiffre 5" />
+      <input class="code-cell" type="text" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="Chiffre 6" />
+    </div>
 
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && !e.target.value && index > 0) {
-          digits[index - 1].focus();
-        } else if (e.key === 'Enter') {
-          authenticateAdmin();
-        }
-      });
+    <div class="err-line" id="errLine" role="alert" aria-live="polite"></div>
+
+    <button class="btn" id="btnLogin">
+      <i class="ti ti-lock-open" aria-hidden="true"></i>
+      Se connecter
+    </button>
+
+    <div class="foot">
+      <i class="ti ti-arrow-left" style="font-size:14px" aria-hidden="true"></i>
+      <a href="/index.html">Retour vers le site public</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = 'http://127.0.0.1:8000';
+  const cells   = document.querySelectorAll('.code-cell');
+  const errLine = document.getElementById('errLine');
+  const btn     = document.getElementById('btnLogin');
+
+  cells.forEach((cell, i) => {
+    cell.addEventListener('input', e => {
+      if (e.target.value && /^\d$/.test(e.target.value)) {
+        cell.classList.add('filled');
+        errLine.textContent = '';
+        cells.forEach(c => c.classList.remove('err'));
+        if (i < cells.length - 1) cells[i + 1].focus();
+      } else {
+        e.target.value = '';
+        cell.classList.remove('filled');
+      }
     });
 
-    const API  = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-      ? 'http://127.0.0.1:8000'
-      : 'https://avis-api-production.up.railway.app'; // Remplacez par l’URL de production de votre API
-
-
-    async function authenticateAdmin() {
-      const code = Array.from(digits).map(d => d.value).join('');
-      
-      if (code.length !== 6) {
-        errorMsg.textContent = 'Veuillez entrer 6 chiffres';
-        digits.forEach(d => d.classList.add('error'));
-        return;
+    cell.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !e.target.value && i > 0) {
+        cells[i - 1].focus();
+        cells[i - 1].classList.remove('filled');
       }
+      if (e.key === 'Enter') doLogin();
+    });
 
-      loginBtn.disabled = true;
-      loginBtn.textContent = 'Vérification…';
+    cell.addEventListener('paste', e => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData)
+        .getData('text').replace(/\D/g, '').slice(0, 6);
+      text.split('').forEach((ch, idx) => {
+        if (cells[idx]) { cells[idx].value = ch; cells[idx].classList.add('filled'); }
+      });
+      const next = cells[Math.min(text.length, cells.length - 1)];
+      if (next) next.focus();
+    });
+  });
 
-      try {
-        const res = await fetch(`${API }/api/admin/verify`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code })
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          localStorage.setItem('adminToken', data.token);
-          window.location.href = 'reviews.html';
-        } else {
-          errorMsg.textContent = 'Code incorrect!';
-          digits.forEach(d => {
-            d.value = '';
-            d.classList.add('error');
-          });
-          digits[0].focus();
-        }
-      } catch (err) {
-        errorMsg.textContent = 'Erreur de connexion';
-        console.error(err);
-      }
-
-      loginBtn.disabled = false;
-      loginBtn.textContent = 'Connexion';
+  async function doLogin() {
+    const code = Array.from(cells).map(c => c.value).join('');
+    if (code.length !== 6) {
+      errLine.innerHTML = '<i class="ti ti-alert-circle" style="font-size:14px"></i> Veuillez entrer les 6 chiffres';
+      cells.forEach(c => c.classList.add('err'));
+      return;
     }
 
-    loginBtn.addEventListener('click', authenticateAdmin);
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ti ti-loader" style="font-size:16px"></i> Vérification…';
 
-    // Focus sur le premier input au chargement
-    window.addEventListener('load', () => {
-      digits[0].focus();
-    });
-  </script>
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('adminToken', data.token);
+        window.location.href = 'reviews.html';
+      } else {
+        errLine.innerHTML = '<i class="ti ti-alert-circle" style="font-size:14px"></i> Code incorrect, veuillez réessayer';
+        cells.forEach(c => { c.value = ''; c.classList.remove('filled'); c.classList.add('err'); });
+        cells[0].focus();
+      }
+    } catch {
+      errLine.innerHTML = '<i class="ti ti-wifi-off" style="font-size:14px"></i> Erreur de connexion au serveur';
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-lock-open" style="font-size:16px"></i> Se connecter';
+  }
+
+  btn.addEventListener('click', doLogin);
+  window.addEventListener('load', () => cells[0].focus());
+</script>
+
 </body>
 </html>
