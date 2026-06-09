@@ -281,7 +281,10 @@
 </div>
 
 <script>
-  const API_BASE = 'http://127.0.0.1:8000';
+  const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://127.0.0.1:8000'
+  : 'https://avis-api-production.up.railway.app';  // ← adapter à votre URL backend
+
   const cells   = document.querySelectorAll('.code-cell');
   const errLine = document.getElementById('errLine');
   const btn     = document.getElementById('btnLogin');
