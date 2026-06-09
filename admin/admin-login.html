@@ -334,7 +334,7 @@
     btn.innerHTML = '<i class="ti ti-loader" style="font-size:16px"></i> Vérification…';
 
     try {
-      const res = await fetch(`${API_BASE}/api/admin/verify`, {
+      const res = await fetch(`${API}/api/admin/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code })
